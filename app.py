@@ -28,9 +28,9 @@ class Feedback(db.Model):
     Q4 = db.Column(db.Text)
     Q5 = db.Column(db.Text)
     Q6 = db.Column(db.Text)
-    Q7 = db.Column(db.Text)
 
-    def __init__(self, Name, Q1, Q2, Q3, Q4, Q5, Q6, Q7):
+
+    def __init__(self, Name, Q1, Q2, Q3, Q4, Q5, Q6):
         self.Name = Name
         self.Q1 = Q1
         self.Q2 = Q2
@@ -38,7 +38,6 @@ class Feedback(db.Model):
         self.Q4 = Q4
         self.Q5 = Q5
         self.Q6 = Q6
-        self.Q7 = Q7
 
 
 @app.route('/')
@@ -56,17 +55,17 @@ def submit():
         Q4 = request.form.get('Q4')
         Q5 = request.form.get('Q5')
         Q6 = request.form.get('Q6')
-        Q7 = request.form.get('Q7')
 
-        # print(Q1, Q2, Q3, Q4, Q5, Q6, Q7)
+
+        # print(Q1, Q2, Q3, Q4, Q5, Q6)
 
     if Name == "":
         return render_template('index.html', message='Please enter required fields')
     if db.session.query(Feedback).filter(Feedback.Name == Name).count() == 0:
-        data = Feedback(Name, Q1, Q2, Q3, Q4, Q5, Q6, Q7)
+        data = Feedback(Name, Q1, Q2, Q3, Q4, Q5, Q6)
         db.session.add(data)
         db.session.commit()
-        send_mail(Name, Q1, Q2, Q3, Q4, Q5, Q6, Q7)
+        send_mail(Name, Q1, Q2, Q3, Q4, Q5, Q6)
     return render_template('success.html')
 
     return render_template(
