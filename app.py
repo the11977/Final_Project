@@ -194,11 +194,22 @@ def submit():
 
         x_test = pd.concat([test_h1, test_h2, test_h3 , test_h4 , test_h5 , test_h6], axis=1)
         
+        features1 = len(x_test.columns)
+
+
         x_test = x_test.values
 
         test = np.expand_dims(x_test[len(x_test)-1], axis=0)
 
         print(f"Predicted class: {model.predict_classes(test)}")
+        guess1 = model.predict_classes(test)
+
+        if guess1 == 0:
+            guess2 = "No"
+        elif guess1 == 1:
+            guess2 = "Yes"
+
+        entries1 = len(x_train)
 
         # test_df = test_df.drop(columns=['name'])
 
@@ -222,7 +233,7 @@ def submit():
         
 
         send_mail(Name, Q1, Q2, Q3, Q4, Q5, Q6)
-    return render_template('success.html')
+    return render_template('success.html', guess = guess2, accuracy = model_accuracy, entries = entries1, features = features1)
 
     return render_template(
         'index.html',

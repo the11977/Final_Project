@@ -10,8 +10,17 @@
   <body>
     <div class="container">
       <img src="../static/feedback_2.png" alt="" class="logo" />
-      <h1>Thank You!</h1>
-      <h2>Thank you so much for taking the time to respond to our survey. We hope to see you soon!</h2>
+      <h1>One Last Question!</h1>
+      <h3>Have you seen Breaking Bad?  Our Guess: {{ guess }}</h3>
+      <input type="radio" name="Q7" value="Yes" /> Yes
+      <input type="radio" name="Q7" value="No" /> No
+      <h2>Current Model Stats</h2>
+      <p>Model Fit Accuracy: {{ accuracy }}</p>
+      <p>Training Data Set Size: {{ entries }} Entries</p>
+      <p>Feature Set Size: {{ features }} Features</p>
     </div>
+  </div>
+  <input type="submit" value="return" class="btn" />
+  </div>
   </body>
 </html>
