@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request
 from flask_sqlalchemy import SQLAlchemy
 from send_mail import send_mail
+import logging
 
 
 import tensorflow as tf
@@ -31,9 +32,11 @@ engine = psycopg2.connect(
 
 train_df = psql.read_sql("SELECT * FROM public.train", engine)
 
+
+
 engine2 = create_engine('postgresql://postgres:password@final-project2.cqjpvyvxep2w.us-east-2.rds.amazonaws.com:5432/postgres')
 
-# feedback_df.to_sql('Feedback', con = engine2, if_exists = 'append', chunksize = 1000)
+# feedback_df.to_sql('train', con = engine2, if_exists = 'append', chunksize = 1000)
 
 
 #Initiate ML and train model off dummy data
@@ -156,13 +159,23 @@ def index():
 @app.route('/submit', methods=['POST'])
 def submit():
     if request.method == 'POST':
+        Q7 = request.form.get('Q7')
+        # if Q7 != None:
+        #     feedback2_df = pd.DataFrame({"q7":[Q7]})
+        #     feedback_df.to_sql('train-y', con = engine2, if_exists = 'append', chunksize = 1000)
+
         Name = request.form.get('Name')
-        Q1 = request.form.get('q1')
-        Q2 = request.form.get('q2')
-        Q3 = request.form.get('q3')
-        Q4 = request.form.get('q4')
-        Q5 = request.form.get('q5')
-        Q6 = request.form.get('q6')
+        Q1 = request.form.get('Q1')
+        Q2 = request.form.get('Q2')
+        Q3 = request.form.get('Q3')
+        Q4 = request.form.get('Q4')
+        Q5 = request.form.get('Q5')
+        Q6 = request.form.get('Q6')
+        
+        print(f"6 {Q6}")
+        print(f"7: {Q7}")
+
+
 
         feedback_df = pd.DataFrame({
                     "q1":[Q1],
@@ -170,12 +183,14 @@ def submit():
                     "q3":[Q3],
                     "q4":[Q4],
                     "q5":[Q5],
-                    "q6":[Q6],  
-                    "q7":["Yes"]})
+                    "q6":[Q6]})
+
 
         test_df = psql.read_sql("SELECT * FROM public.test", engine)
-
         test_df = test_df.append(feedback_df, ignore_index = True) 
+        
+        # feedback1_df.to_sql('train-x', con = engine2, if_exists = 'append', chunksize = 1000)
+
 
         test_q1 = test_df["q1"]
         test_q2 = test_df["q2"]
@@ -201,7 +216,7 @@ def submit():
 
         test = np.expand_dims(x_test[len(x_test)-1], axis=0)
 
-        print(f"Predicted class: {model.predict_classes(test)}")
+        print(f"Predicted class: {model.predict_classes(test)} and {Q6}")
         guess1 = model.predict_classes(test)
 
         if guess1 == 0:
@@ -210,6 +225,7 @@ def submit():
             guess2 = "Yes"
 
         entries1 = len(x_train)
+
 
         # test_df = test_df.drop(columns=['name'])
 
@@ -234,6 +250,7 @@ def submit():
 
         send_mail(Name, Q1, Q2, Q3, Q4, Q5, Q6)
     return render_template('success.html', guess = guess2, accuracy = model_accuracy, entries = entries1, features = features1)
+
 
     return render_template(
         'index.html',

@@ -9,18 +9,21 @@
   </head>
   <body>
     <div class="container">
-      <img src="../static/feedback_2.png" alt="" class="logo" />
-      <h1>One Last Question!</h1>
-      <h3>Have you seen Breaking Bad?  Our Guess: {{ guess }}</h3>
-      <input type="radio" name="Q7" value="Yes" /> Yes
-      <input type="radio" name="Q7" value="No" /> No
-      <h2>Current Model Stats</h2>
-      <p>Model Fit Accuracy: {{ accuracy }}</p>
-      <p>Training Data Set Size: {{ entries }} Entries</p>
-      <p>Feature Set Size: {{ features }} Features</p>
+      <form action="/submit" method="POST">
+        <img src="../static/feedback_2.png" alt="" class="logo" />
+        <h1>One Last Question!</h1>
+        <h3>Have you seen Breaking Bad?  Our Guess: {{ guess }}</h3>
+        <input type="radio" name="Q7" value="Yes" /> Yes
+        <input type="radio" name="Q7" value="No" /> No
+        <h2>Current Model Stats</h2>
+        <p>Model Fit Accuracy: {{ accuracy }}</p>
+        <p>Training Data Set Size: {{ entries }} Entries</p>
+        <p>Feature Set Size: {{ features }} Features</p>
+        <input type="submit" value="return" class="btn" />
+      </form>
     </div>
-  </div>
-  <input type="submit" value="return" class="btn" />
-  </div>
+  
+  
+
   </body>
 </html>
