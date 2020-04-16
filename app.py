@@ -31,7 +31,8 @@ engine = psycopg2.connect(
 )
 
 train_df = psql.read_sql("SELECT * FROM public.train", engine)
-
+xtrain_df = psql.read_sql("SELECT * FROM public.xtr1", engine)
+ytrain_df = psql.read_sql("SELECT * FROM public.ytr1", engine)
 
 
 engine2 = create_engine('postgresql://postgres:password@final-project2.cqjpvyvxep2w.us-east-2.rds.amazonaws.com:5432/postgres')
@@ -43,13 +44,13 @@ engine2 = create_engine('postgresql://postgres:password@final-project2.cqjpvyvxe
 
 #One-hot encoding and x-y split
 
-train_q1 = train_df["q1"]
-train_q2 = train_df["q2"]
-train_q3 = train_df["q3"]
-train_q4 = train_df["q4"]
-train_q5 = train_df["q5"]
-train_q6 = train_df["q6"]
-train_q7 = train_df["q7"]
+train_q1 = xtrain_df["q1"]
+train_q2 = xtrain_df["q2"]
+train_q3 = xtrain_df["q3"]
+train_q4 = xtrain_df["q4"]
+train_q5 = xtrain_df["q5"]
+train_q6 = xtrain_df["q6"]
+train_q7 = ytrain_df["q7"]
 
 train_h1 = pd.get_dummies(train_q1,prefix=['q1'])
 train_h2 = pd.get_dummies(train_q2,prefix=['q2'])
@@ -160,9 +161,10 @@ def index():
 def submit():
     if request.method == 'POST':
         Q7 = request.form.get('Q7')
-        # if Q7 != None:
-        #     feedback2_df = pd.DataFrame({"q7":[Q7]})
-        #     feedback_df.to_sql('train-y', con = engine2, if_exists = 'append', chunksize = 1000)
+        if Q7 != None:
+            feedback2_df = pd.DataFrame({"q7":[Q7]})
+            feedback2_df.to_sql('ytr1', con = engine2, if_exists = 'append', chunksize = 1000, index=False)
+            return render_template('index.html')
 
         Name = request.form.get('Name')
         Q1 = request.form.get('Q1')
@@ -172,8 +174,8 @@ def submit():
         Q5 = request.form.get('Q5')
         Q6 = request.form.get('Q6')
         
-        print(f"6 {Q6}")
-        print(f"7: {Q7}")
+        # print(f"6 {Q6}")
+        # print(f"7: {Q7}")
 
 
 
@@ -189,7 +191,9 @@ def submit():
         test_df = psql.read_sql("SELECT * FROM public.test", engine)
         test_df = test_df.append(feedback_df, ignore_index = True) 
         
-        # feedback1_df.to_sql('train-x', con = engine2, if_exists = 'append', chunksize = 1000)
+        feedback_df.to_sql('xtr1', con = engine2, if_exists = 'append', chunksize = 1000, index=False)
+        engine2.execute('delete from public.xtr1 where Q1 is null')
+
 
 
         test_q1 = test_df["q1"]
@@ -216,7 +220,7 @@ def submit():
 
         test = np.expand_dims(x_test[len(x_test)-1], axis=0)
 
-        print(f"Predicted class: {model.predict_classes(test)} and {Q6}")
+        print(f"Predicted class: {model.predict_classes(test)}")
         guess1 = model.predict_classes(test)
 
         if guess1 == 0:
